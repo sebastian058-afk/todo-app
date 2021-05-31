@@ -2,6 +2,7 @@ import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import AuthenticationService from './AuthenticationService.js';
+import './Todo.css';
 
 class HeaderComponent extends Component{
     render(){
