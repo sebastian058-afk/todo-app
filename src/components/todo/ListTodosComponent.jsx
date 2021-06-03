@@ -1,3 +1,4 @@
+import moment from "moment";
 import { Component } from "react";
 import TodoService from "../../api/todo/TodoService";
 import AuthenticationService from './AuthenticationService';
@@ -13,6 +14,7 @@ class ListTodosComponent extends Component{
 
         this.deleteTodo = this.deleteTodo.bind(this);
         this.updateTodo = this.updateTodo.bind(this);
+        this.addTodoClicked = this.addTodoClicked.bind(this);
     }
 
     componentDidMount(){
@@ -29,11 +31,12 @@ class ListTodosComponent extends Component{
     }
 
     deleteTodo(id, description){
-        let user = AuthenticationService.getUserLoggedIn;
+        let user = AuthenticationService.getUserLoggedIn()
+        console.log(user)
         TodoService.deleteTodo(user, id).then(
             response => {                
                 this.setState({message: `Todo '${description}' deleted succesfully`,
-                                deleteFailer: false});
+                                deleteFailed: false});
                 this.refreshTodos();
                 setTimeout(() => {
                     this.setState({message: null});
@@ -55,10 +58,17 @@ class ListTodosComponent extends Component{
         this.props.history.push(`/todos/${id}`);
     }
 
+    addTodoClicked(){ 
+        this.props.history.push(`/todos/-1`);
+    }
+
     render(){
         return(
-            <div className="">
+            <div className="container">
                 <h1>List Todos</h1>
+                <div className="btn-add-todo">
+                    <button className="btn btn-warning" onClick={this.addTodoClicked}>Add todo<i className="bi bi-plus-square-fill"></i></button>
+                </div>
                 {this.state.message != null && this.state.deleteFailed === false && <div className="alert alert-success">{this.state.message}</div>}
                 {this.state.message != null && this.state.deleteFailed === true && <div className="alert alert-danger">{this.state.message}</div>}
                 <div className="container">                    
@@ -68,8 +78,8 @@ class ListTodosComponent extends Component{
                                 <th>Description</th>
                                 <th>Is completed</th>
                                 <th>Target Date</th>
-                                <th></th>
-                                <th></th>
+                                <th>Update</th>
+                                <th>Delete</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,14 +89,14 @@ class ListTodosComponent extends Component{
                                     <tr key={todo.id}>
                                         <td>{todo.description}</td>
                                         <td>{todo.done.toString()}</td>
-                                        <td>{todo.targetDate.toString()}</td>
-                                        <td><button className="btn btn-info" onClick={() => this.updateTodo(todo.id)}>Edit</button></td>
-                                        <td><button className="btn btn-danger" onClick={() => this.deleteTodo(todo.id, todo.description)}>Delete</button></td>
+                                        <td>{moment(todo.targetDate).format('YYYY-MM-DD')}</td>
+                                        <td><button className="btn btn-outline-info" onClick={() => this.updateTodo(todo.id)}>Update<i className="bi bi-pencil-fill"></i></button></td>
+                                        <td><button className="btn btn-outline-danger" onClick={() => this.deleteTodo(todo.id, todo.description)}>Delete<i className="bi bi-trash-fill"></i></button></td>
                                     </tr>
                                 )
                             }
                         </tbody>
-                    </table>
+                    </table>                    
                 </div>
             </div>
         )
